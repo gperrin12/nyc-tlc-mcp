@@ -33,7 +33,7 @@ athena_client = boto3.client('athena', region_name=REGION)
 
 # Table schema information (customize based on your actual schema)
 TABLE_SCHEMAS = {
-    "yellow_taxi_trips": {
+    "yellow_tripdata_2025_parquet": {
         "description": "Yellow taxi trip data including pickup/dropoff locations, times, fares, and passenger counts",
         "columns": [
             "vendorid", "tpep_pickup_datetime", "tpep_dropoff_datetime",
@@ -44,30 +44,6 @@ TABLE_SCHEMAS = {
             "total_amount", "congestion_surcharge", "airport_fee"
         ]
     },
-    "green_taxi_trips": {
-        "description": "Green taxi trip data (similar to yellow but serves different areas)",
-        "columns": [
-            "vendorid", "lpep_pickup_datetime", "lpep_dropoff_datetime",
-            "passenger_count", "trip_distance", "ratecodeid",
-            "store_and_fwd_flag", "pulocationid", "dolocationid",
-            "payment_type", "fare_amount", "extra", "mta_tax",
-            "tip_amount", "tolls_amount", "improvement_surcharge",
-            "total_amount", "congestion_surcharge", "trip_type"
-        ]
-    },
-    "fhv_trips": {
-        "description": "For-hire vehicle trip data (Uber, Lyft, etc.)",
-        "columns": [
-            "dispatching_base_num", "pickup_datetime", "dropoff_datetime",
-            "pulocationid", "dolocationid", "sr_flag", "affiliated_base_number"
-        ]
-    },
-    "taxi_zones": {
-        "description": "NYC taxi zone lookup table with borough and zone information",
-        "columns": [
-            "locationid", "borough", "zone", "service_zone"
-        ]
-    }
 }
 
 
@@ -160,7 +136,7 @@ async def list_tools() -> list[Tool]:
                 "Execute a SQL query against NYC TLC data in Athena. "
                 "Accepts natural language questions or direct SQL queries. "
                 "The tool will help convert natural language to SQL if needed. "
-                "Available tables: yellow_taxi_trips, green_taxi_trips, fhv_trips, taxi_zones. "
+                "Available tables: yellow_tripdata_2025_parquet. "
                 "Returns up to 100 rows of results."
             ),
             inputSchema={
