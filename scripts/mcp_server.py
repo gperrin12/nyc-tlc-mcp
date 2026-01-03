@@ -137,7 +137,7 @@ async def list_tools() -> list[Tool]:
                 "Execute a SQL query against NYC TLC data in Athena. "
                 "Accepts natural language questions or direct SQL queries. "
                 "The tool will help convert natural language to SQL if needed. "
-                "Available tables: yellow_tripdata_2025_parquet. "
+                "Available tables: gtp_tlc_data. "
                 "Returns up to 100 rows of results."
             ),
             inputSchema={
