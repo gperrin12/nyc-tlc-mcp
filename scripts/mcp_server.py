@@ -33,15 +33,16 @@ athena_client = boto3.client('athena', region_name=REGION)
 
 # Table schema information (customize based on your actual schema)
 TABLE_SCHEMAS = {
-    "yellow_tripdata_2025_parquet": {
-        "description": "Yellow taxi trip data including pickup/dropoff locations, times, fares, and passenger counts",
+    "gtp_tlc_data": {
+        "description": "Taxi trip data (right now just yellow and green taxis), including pickup/dropoff locations, times, fares, and passenger counts",
         "columns": [
             "vendorid", "tpep_pickup_datetime", "tpep_dropoff_datetime",
             "passenger_count", "trip_distance", "ratecodeid",
             "store_and_fwd_flag", "pulocationid", "dolocationid",
             "payment_type", "fare_amount", "extra", "mta_tax",
             "tip_amount", "tolls_amount", "improvement_surcharge",
-            "total_amount", "congestion_surcharge", "airport_fee"
+            "total_amount", "congestion_surcharge", "airport_fee",
+            "type", "year", "month"
         ]
     },
 }
