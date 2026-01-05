@@ -1,0 +1,8 @@
+name: tlc
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - geopandas
+  - boto3
+  - pyarrow

@@ -1,5 +1,0 @@
-boto3>=1.34.0
-mcp>=0.9.0
-geopandas>=0.14
-pyproj>=3.6
-pyarrow>=15
