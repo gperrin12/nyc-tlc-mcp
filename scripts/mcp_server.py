@@ -193,8 +193,6 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent]:
     elif name == "generate_sql":
         question = arguments.get("question", "")
         
-        # This is a simple heuristic - in production, you'd want Claude to do this
-        # or use a more sophisticated NL-to-SQL system
         response = {
             "question": question,
             "note": "Use Claude's natural language understanding to generate SQL based on the question and schema",
