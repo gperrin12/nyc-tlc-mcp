@@ -45,6 +45,14 @@ TABLE_SCHEMAS = {
             "type", "year", "month"
         ]
     },
+    "taxi_zones": {
+        "description": "Taxi zone boundaries for location lookups and joins (includes geometry and WKT)",
+        "columns": [
+            "objectid", "shape_leng", "shape_area",
+            "zone", "locationid", "borough",
+            "geometry", "geometry_wkt"
+        ]
+    },
 }
 
 
@@ -137,7 +145,7 @@ async def list_tools() -> list[Tool]:
                 "Execute a SQL query against NYC TLC data in Athena. "
                 "Accepts natural language questions or direct SQL queries. "
                 "The tool will help convert natural language to SQL if needed. "
-                "Available tables: gtp_tlc_data. "
+                "Available tables: gtp_tlc_data, taxi_zones. "
                 "Returns up to 100 rows of results."
             ),
             inputSchema={
