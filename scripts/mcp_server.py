@@ -34,7 +34,11 @@ athena_client = boto3.client('athena', region_name=REGION)
 # Table schema information (customize based on your actual schema)
 TABLE_SCHEMAS = {
     "gtp_tlc_data": {
-        "description": "Taxi trip data (right now just yellow and green taxis), including pickup/dropoff locations, times, fares, and passenger counts",
+        "description": (
+            "Taxi trip data (yellow and green taxis) with neighborhood-level geography. "
+            "Uses pulocationid and dolocationid (~200 taxi zones); join to taxi_zones for geometry. "
+            "No raw lat/lon—locations are aggregated to zone IDs."
+        ),
         "columns": [
             "vendorid", "tpep_pickup_datetime", "tpep_dropoff_datetime",
             "passenger_count", "trip_distance", "ratecodeid",
@@ -43,6 +47,23 @@ TABLE_SCHEMAS = {
             "tip_amount", "tolls_amount", "improvement_surcharge",
             "total_amount", "congestion_surcharge", "airport_fee",
             "type", "year", "month"
+        ]
+    },
+    "par": {
+        "description": (
+            "Pre-2016 archived TLC trip data with raw pickup/dropoff coordinates. "
+            "Has pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude. "
+            "Column 'color' maps to 'type' in gtp_tlc_data (taxi type: yellow, green, etc.). "
+            "Use for pre-2016 analysis and point-level geography; gtp_tlc_data is zone-level."
+        ),
+        "columns": [
+            "vendorid", "lpep_pickup_datetime", "lpep_dropoff_datetime",
+            "store_and_fwd_flag", "ratecodeid",
+            "pickup_longitude", "pickup_latitude", "dropoff_longitude", "dropoff_latitude",
+            "passenger_count", "trip_distance", "fare_amount", "extra",
+            "mta_tax", "tip_amount", "tolls_amount", "ehail_fee",
+            "improvement_surcharge", "total_amount", "payment_type",
+            "trip_type", "tcolor", "year", "month", "color"
         ]
     },
     "taxi_zones": {
@@ -145,7 +166,7 @@ async def list_tools() -> list[Tool]:
                 "Execute a SQL query against NYC TLC data in Athena. "
                 "Accepts natural language questions or direct SQL queries. "
                 "The tool will help convert natural language to SQL if needed. "
-                "Available tables: gtp_tlc_data, taxi_zones. "
+                "Available tables: gtp_tlc_data (zone-level, pulocationid/dolocationid), par (pre-2016 with lat/lon), taxi_zones. "
                 "Returns up to 100 rows of results."
             ),
             inputSchema={
