@@ -165,6 +165,45 @@ TABLE_SCHEMAS = {
             "year", "month"
         ]
     },
+    "nyc_311": {
+        "description": (
+            "NYC 311 Service Requests (2020-present, ~40M+ rows). "
+            "Partitioned by year (STRING) and month (STRING, zero-padded) — "
+            "ALWAYS filter by year/month partition to avoid full-table scans. "
+            "All columns are STRING; cast at query time with TRY_CAST. "
+            "Date columns (created_date, closed_date, due_date, resolution_action_updated_date) "
+            "are ISO-8601 strings — parse with FROM_ISO8601_TIMESTAMP() or DATE_PARSE() as needed. "
+            "Borough column is populated natively ('BROOKLYN', 'MANHATTAN', 'QUEENS', 'BRONX', "
+            "'STATEN ISLAND', or 'Unspecified') — no spatial join needed for borough-level analysis. "
+            "Has raw lat/lon for finer geography: ST_POINT(CAST(longitude AS DOUBLE), CAST(latitude AS DOUBLE)) "
+            "joins to census_tracts.geometry_wkt or taxi_zones.geometry_wkt via ST_CONTAINS. "
+            "Filter NYC bounds: latitude BETWEEN 40.4 AND 41.0 AND longitude BETWEEN -74.3 AND -73.6. "
+            "Key categorical columns: complaint_type (e.g. 'Noise - Residential', 'Illegal Parking'), "
+            "agency (NYPD, DSNY, DOT, HPD, etc.), status (Open, Closed, In Progress), "
+            "open_data_channel_type (PHONE, ONLINE, MOBILE). "
+            "Resolution time = closed_date - created_date; many requests have NULL closed_date if still open."
+        ),
+        "columns": [
+            "unique_key", "created_date", "closed_date",
+            "agency", "agency_name",
+            "complaint_type", "descriptor", "location_type",
+            "incident_zip", "incident_address", "street_name",
+            "cross_street_1", "cross_street_2",
+            "intersection_street_1", "intersection_street_2",
+            "address_type", "city", "landmark", "facility_type",
+            "status", "due_date", "resolution_description",
+            "resolution_action_updated_date",
+            "community_board", "bbl", "borough",
+            "x_coordinate_state_plane", "y_coordinate_state_plane",
+            "open_data_channel_type",
+            "park_facility_name", "park_borough",
+            "vehicle_type", "taxi_company_borough", "taxi_pick_up_location",
+            "bridge_highway_name", "bridge_highway_direction",
+            "road_ramp", "bridge_highway_segment",
+            "latitude", "longitude", "location_latitude", "location_longitude",
+            "year", "month"
+        ]
+    },
 }
 
 
@@ -263,7 +302,8 @@ async def list_tools() -> list[Tool]:
                 "taxi_zones (263 zones, geometry as WKT), "
                 "census_tracts (~2,300 NYC tracts, geometry as WKT, joins to demographics on geoid), "
                 "census_tract_demographics (ACS 5-year demographics, two vintages: _2018 and _2023), "
-                "nypd_collisions (~2M crash records with raw lat/lon, partitioned by year/month). "
+                "nypd_collisions (~2M crash records with raw lat/lon, partitioned by year/month), "
+                "nyc_311 (~40M+ service requests 2020-present with lat/lon and borough, partitioned by year/month). "
                 "Returns up to 100 rows of results."
             ),
             inputSchema={
@@ -281,7 +321,7 @@ async def list_tools() -> list[Tool]:
             name="get_schema",
             description=(
                 "Get the schema information for all tables in the Athena database "
-                "(taxi trips, taxi zones, census tracts, ACS demographics, NYPD collisions). "
+                "(taxi trips, taxi zones, census tracts, ACS demographics, NYPD collisions, 311 service requests). "
                 "Returns table names, descriptions, and column lists."
             ),
             inputSchema={
@@ -293,7 +333,7 @@ async def list_tools() -> list[Tool]:
             name="generate_sql",
             description=(
                 "Generate a SQL query from a natural language question about NYC civic data "
-                "(taxi trips, census tracts, demographics, traffic collisions). "
+                "(taxi trips, census tracts, demographics, traffic collisions, 311 service requests). "
                 "Returns the SQL without executing it, allowing you to review before running."
             ),
             inputSchema={
